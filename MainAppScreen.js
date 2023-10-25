@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import VideoScreen from './VideoScreen';
 import VideoUploadScreen from './VideoUploadScreen';
+import ProfileScreen from './ProfileScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -53,7 +54,7 @@ const MainAppScreen = ({ navigation }) => {
                       tabBarLabel: '',
                     }} />
         <Tab.Screen name="Profile" 
-                    component={VideoUploadScreen}
+                    component={ProfileScreen}
                     options={{
                       tabBarIcon: ({ color, size }) => (
                         <View style={styles.iconContainer}>

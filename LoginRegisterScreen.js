@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import MainAppScreen from './MainAppScreen'; // Ваш основной экран после авторизации
@@ -13,6 +13,9 @@ const LoginRegisterScreen = () => {
   const [name, setName] = useState(''); // Имя пользователя при регистрации
   const [age, setAge] = useState(''); // Возраст пользователя при регистрации
   const [authenticated, setAuthenticated] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [TitleErrorMessage, setTitleErrorMessage] = useState('');
 
   const handleLogin = async () => {
     try {
@@ -53,10 +56,15 @@ const LoginRegisterScreen = () => {
         // Успешная регистрация. Сохраните токен приложения в AsyncStorage.
         console.log(appToken);
         await AsyncStorage.setItem('appToken', appToken);
+        setTitleErrorMessage('Успех!');
+        setErrorMessage('Вы успешно зарегистрировались!');
+        setErrorModalVisible(true);
       }
     } catch (error) {
-      // Обработка ошибок при регистрации.
-      console.error('Ошибка при регистрации:', error);
+      setTitleErrorMessage('Ошибка при регистрации!');
+      setErrorMessage('Возможно пользователь с таким именем уже существует.');
+      setErrorModalVisible(true);
+      console.log('Ошибка при регистрации:', error);
     }
   };
 
@@ -103,10 +111,52 @@ const LoginRegisterScreen = () => {
             onChangeText={setAge}
           />
           <Button title="Зарегистрироваться" onPress={handleRegister} />
+          <Modal
+        animationType="slide"
+        transparent={true}
+        visible={errorModalVisible}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{TitleErrorMessage}</Text>
+            <Text style={styles.modalText}>{errorMessage}</Text>
+            <Button
+              title="Закрыть"
+              onPress={() => setErrorModalVisible(false)}
+            />
+          </View>
+        </View>
+      </Modal>
         </View>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      color: 'white',
+    },
+    modalContent: {
+      backgroundColor: 'black',
+      padding: 20,
+      borderRadius: 10,
+      elevation: 5,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: 'white',
+    },
+    modalText: {
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: 'white',
+      paddingTop: '3%',
+    },
+  });
 
 export default LoginRegisterScreen;
