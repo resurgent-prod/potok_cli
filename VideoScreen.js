@@ -97,13 +97,12 @@ const VideoScreen = () => {
               ref={videoRef}
               source={{ uri: videos[currentVideoIndex].videoUrl }}
               style={styles.video}
-              onEnd={handleVideoEnd}
+              isLooping
               resizeMode="cover"
               shouldPlay={true}
               isMuted={false}
               useNativeControls={false}
               onError={(error) => console.error('Ошибка воспроизведения видео', error)}
-              onLog={(log) => console.log('log', log)}
               preload="auto"
             />
           ) : (

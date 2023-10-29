@@ -40,9 +40,10 @@ const MainAppScreen = ({ navigation }) => {
                       ),
                       tabBarLabel: '',
                     }} />
-        <Tab.Screen name="VideoUploadScreen" 
+        <Tab.Screen name="Загрузить видео" 
                     component={VideoUploadScreen}
                     options={{
+                      headerShown: true,
                       tabBarIcon: ({ color, size }) => (
                         <View style={styles.iconContainer}>
                         <Image
@@ -53,9 +54,10 @@ const MainAppScreen = ({ navigation }) => {
                       ),
                       tabBarLabel: '',
                     }} />
-        <Tab.Screen name="Profile" 
+        <Tab.Screen name="Профиль" 
                     component={ProfileScreen}
                     options={{
+                      headerShown: true,
                       tabBarIcon: ({ color, size }) => (
                         <View style={styles.iconContainer}>
                         <Image
