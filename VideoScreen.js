@@ -1,6 +1,5 @@
-//VideoScreen.js
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl } from 'react-native';
 import { Video } from 'expo-av';
 import axios from 'axios';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
@@ -9,8 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const VideoScreen = () => {
   const [videos, setVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const videoRef = useRef(null); // Создаем ref для видео
-  
+  const [isLoaded, setIsLoaded] = useState(false); // Добавляем состояние для отслеживания загрузки видео
+  const videoRef = useRef(null);
 
   useEffect(() => {
     loadRandomVideos();
@@ -30,17 +29,16 @@ const VideoScreen = () => {
     const appToken = await AsyncStorage.getItem('appToken');
     const jwtToken = await AsyncStorage.getItem('jwtToken');
     try {
-      const response = await axios.get('http://46.36.152.248:3000/random-video', {
+      const response = await axios.get('http://213.232.196.73:3000/random-video', {
         headers: {
-            Authorization: jwtToken,
-            'x-app-token': appToken,
+          Authorization: jwtToken,
+          'x-app-token': appToken,
         },
       });
 
       if (response.status === 200) {
         setVideos(response.data.videos);
-        // Предварительно загружаем следующее видео
-        loadNextVideo();
+        setIsLoaded(true); // Устанавливаем, что видео загружены
       } else {
         console.error('Ошибка при загрузке видео');
       }
@@ -52,19 +50,18 @@ const VideoScreen = () => {
   const loadNextVideo = () => {
     if (currentVideoIndex < videos.length - 1) {
       const nextVideoIndex = currentVideoIndex + 1;
-      Video.prefetch(videos[nextVideoIndex].videoUrl);
+      setCurrentVideoIndex(nextVideoIndex);
     }
   };
 
   const handleVideoEnd = async () => {
     if (currentVideoIndex < videos.length - 1) {
-      setCurrentVideoIndex(currentVideoIndex + 1);
+      loadNextVideo();
       if (videoRef.current) {
-        videoRef.current.replayAsync(); // Запустить видео заново
+        videoRef.current.replayAsync();
       }
     }
   };
-
 
   const handleSwipe = ({ nativeEvent }) => {
     if (nativeEvent.state === State.END) {
@@ -72,16 +69,16 @@ const VideoScreen = () => {
 
       if (translationY < -50) {
         if (currentVideoIndex < videos.length - 1) {
-          setCurrentVideoIndex(currentVideoIndex + 1);
+          loadNextVideo();
           if (videoRef.current) {
-            videoRef.current.replayAsync(); // Запустить видео заново
+            videoRef.current.replayAsync();
           }
         }
       } else if (translationY > 50) {
         if (currentVideoIndex > 0) {
           setCurrentVideoIndex(currentVideoIndex - 1);
           if (videoRef.current) {
-            videoRef.current.replayAsync(); // Запустить видео заново
+            videoRef.current.replayAsync();
           }
         }
       }
@@ -92,7 +89,7 @@ const VideoScreen = () => {
     <View style={styles.container}>
       <PanGestureHandler onHandlerStateChange={handleSwipe}>
         <View style={styles.videoContainer}>
-          {videos.length > 0 ? (
+          {isLoaded && videos.length > 0 ? ( // Добавляем проверку isLoaded
             <Video
               ref={videoRef}
               source={{ uri: videos[currentVideoIndex].videoUrl }}
@@ -104,6 +101,7 @@ const VideoScreen = () => {
               useNativeControls={false}
               onError={(error) => console.error('Ошибка воспроизведения видео', error)}
               preload="auto"
+              onEnd={handleVideoEnd} // Обработчик окончания видео
             />
           ) : (
             <Text>Loading...</Text>

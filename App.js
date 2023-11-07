@@ -35,7 +35,7 @@ const App = () => {
   const checkTokenOnServer = async (appToken) => {
     try {
       // Отправить запрос на сервер для проверки токена
-      const response = await axios.post('http://46.36.152.248:3000/check-token', { appToken });
+      const response = await axios.post('http://213.232.196.73:3000/check-token', { appToken });
   
       if (response.status === 200 && response.data.valid) {
         return true;

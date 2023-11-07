@@ -52,7 +52,7 @@ const VideoUploadScreen = () => {
     const jwtToken = await AsyncStorage.getItem('jwtToken');
 
     try {
-      const response = await axios.post('http://46.36.152.248:3000/upload-video', formData, {
+      const response = await axios.post('http://213.232.196.73:3000/upload-video', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: jwtToken,
